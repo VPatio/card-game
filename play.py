@@ -14,40 +14,62 @@ class SimplifiedCard:
 
             self.simple_cards.append((self.simple_rank, self.simple_suit))
 
-        self.simple_ranks = [self.simple_card[0] for self.simple_card in self.simple_cards]
-        self.simple_suits = [self.simple_card[1] for self.simple_card in self.simple_cards]
+        self.simple_ranks = [rank for rank, suit in self.simple_cards]
+        self.simple_suits = [suit for rank, suit in self.simple_cards]
 
         self.rank = 0
         self.suit = 0
 
+        self.simple_cards_arranged_by_rank = list(sorted(self.simple_cards, key = lambda x: x[0]))
+
         self.plays = {
-            (self.rank) : [[15, 1], "High Card"],
-            (self.rank, self.rank) : [[15, 2], "Pair"],
-            (self.rank, self.rank, self.rank) : [[15, 3], "Triple"],
-            (self.rank, self.rank+1, self.rank+2) : [[35, 2], "Mini Straight"],
-            (self.rank, self.rank, self.rank, self.rank, self.rank) : [[50, 4], "Impossible"]
+            (0) : [[15, 1], "High Card"],
+            (0, 0) : [[15, 2], "Pair"],
+            (0, 0, 0) : [[15, 3], "Triple"],
+            (0, 1, 2) : [[35, 2], "Mini Straight"],
+            (0, 0, 0, 0, 0) : [[50, 4], "Impossible"]
             }
         
     def eligible_plays(self):
         all_eligible_plays: list = []
-
-        for (card, amount), (card_valid_no_purpose, amount_valid), (useless_chips, name) in zip(
-        Counter(self.simple_cards).items(), 
-        Counter(self.plays.keys()).items(),
-        self.plays.values()
-         ):
-            self.rank = card
-            if amount >= amount_valid:
-                all_eligible_plays.append(name)
         
-        if all_eligible_plays == None:
-            return "No eligible plays"
-        return all_eligible_plays
+        for simple_card_abr in self.simple_cards_arranged_by_rank:
+            if simple_card_abr[0] > 0:
+                for simple_card_abr_2 in self.simple_cards_arranged_by_rank:
+                    simple_card_abr_2[0] -= 1
+            elif simple_card_abr[0] == 0:
+                pass
+            
+            self.counter_at_home = 0
+            for simple_card_abr3 in self.simple_cards_arranged_by_rank:
+                while True:
+                    try: 
+                        print(self.rank_to_match)
+                    except:
+                        self.rank_to_match = simple_card_abr3[0]
+                        self.counter_at_home = 1
+                    else:
+                        break
+
+                if simple_card_abr3[0] != self.rank_to_match:
+                    break
+                else:
+                    self.counter_at_home +=1
+
+            for card_valid, amount_valid, useless_chips, play_name in zip(
+                Counter(*self.plays.keys()).items(),
+                self.plays.values()
+                ):
+                if self.counter_at_home >= amount_valid:
+                    self.all_eligible_plays.append(play_name)
+        return self.all_eligible_plays
+        
+
+
     
 
 if __name__ == "__main__":
     hand = card.Deck().deck_52(return_result = True)
 
     simplified_hand = SimplifiedCard(hand)
-    #print(simplified_hand.simple_cards)
     print(simplified_hand.eligible_plays())
