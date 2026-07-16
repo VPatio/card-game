@@ -1,4 +1,5 @@
 import card
+from collections import Counter
 
 class SimplifiedCard:
     simple_converter_rank = {'Ace' : 1, '2' : 2, '3' : 3, '4' : 4, '5' : 5, '6' : 6, '7' : 7, '8' : 8, '9' : 9, '10' : 10, 'Jack' : 11, 'Queen' : 12, 'King' : 13}
@@ -20,15 +21,33 @@ class SimplifiedCard:
         self.suit = 0
 
         self.plays = {
-            (self.rank) : [15, 1],
-            (self.rank, self.rank) : [15, 2],
-            (self.rank, self.rank, self.rank) : [15, 3],
-            (self.rank, self.rank+1, self.rank+2) : [35, 2],
-            (self.rank, self.rank, self.rank, self.rank, self.rank) : [50, 4]
+            (self.rank) : [[15, 1], "High Card"],
+            (self.rank, self.rank) : [[15, 2], "Pair"],
+            (self.rank, self.rank, self.rank) : [[15, 3], "Triple"],
+            (self.rank, self.rank+1, self.rank+2) : [[35, 2], "Mini Straight"],
+            (self.rank, self.rank, self.rank, self.rank, self.rank) : [[50, 4], "Impossible"]
             }
+        
+    def eligible_plays(self):
+        all_eligible_plays: list = []
+
+        for (card, amount), (card_valid_no_purpose, amount_valid), (useless_chips, name) in zip(
+        Counter(self.simple_cards).items(), 
+        Counter(self.plays.keys()).items(),
+        self.plays.values()
+         ):
+            self.rank = card
+            if amount >= amount_valid:
+                all_eligible_plays.append(name)
+        
+        if all_eligible_plays == None:
+            return "No eligible plays"
+        return all_eligible_plays
+    
 
 if __name__ == "__main__":
     hand = card.Deck().deck_52(return_result = True)
 
     simplified_hand = SimplifiedCard(hand)
-    print(simplified_hand.simple_cards)
+    #print(simplified_hand.simple_cards)
+    print(simplified_hand.eligible_plays())
