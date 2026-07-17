@@ -31,33 +31,28 @@ class SimplifiedCard:
             }
         
     def eligible_plays(self):
-        all_eligible_plays: list = []
+        self.all_eligible_plays: list = []
         
         for simple_card_abr in self.simple_cards_arranged_by_rank:
             if simple_card_abr[0] > 0:
-                for simple_card_abr_2 in self.simple_cards_arranged_by_rank:
-                    simple_card_abr_2[0] -= 1
+                self.simple_cards_arranged_by_rank = [(rank_abr - 1, suit_rememba) for rank_abr, suit_rememba in self.simple_cards_arranged_by_rank]
+                    #find new way to do this without having to do for in loops (thank you python for not making me have to do 9000 nested loops)
             elif simple_card_abr[0] == 0:
                 pass
             
             self.counter_at_home = 0
+            
             for simple_card_abr3 in self.simple_cards_arranged_by_rank:
-                while True:
-                    try: 
-                        print(self.rank_to_match)
-                    except:
-                        self.rank_to_match = simple_card_abr3[0]
-                        self.counter_at_home = 1
-                    else:
-                        break
-
-                if simple_card_abr3[0] != self.rank_to_match:
+                if self.simple_cards_arranged_by_rank[0] == simple_card_abr3:
+                    self.rank_to_match = simple_card_abr3[0]
+                
+                elif simple_card_abr3[0] != self.rank_to_match:
                     break
                 else:
                     self.counter_at_home +=1
 
-            for card_valid, amount_valid, useless_chips, play_name in zip(
-                Counter(*self.plays.keys()).items(),
+            for (card_valid, amount_valid), (useless_chips, play_name) in zip(
+                Counter(self.plays.keys()).items(),
                 self.plays.values()
                 ):
                 if self.counter_at_home >= amount_valid:
