@@ -1,3 +1,5 @@
+#remember the really cool tech of how you can use local variables in a class method so that its for the cool shi but isnt attribute
+
 import card
 from collections import Counter
 
@@ -15,14 +17,6 @@ def difference_cards(card_set, rank_or_suit = False):
     
     return card_set
 
-def tuple_checker(small_tuple, big_tuple):
-    for i in range(len(small_tuple)):
-        if small_tuple[i] == big_tuple[i]:
-            continue
-        else:
-            return False
-    return True
-#move this to an external module sometime in the future
 
 def intersection_tuples(tuple1, tuple2):
     intersected = []
@@ -59,7 +53,7 @@ class SimplifiedCard:
             "Pair" : [(1, 1), [15, 2]],
             "Triple" : [(1, 1, 1) ,[15, 3]],
             "Mini Straight" : [(1, 2, 3), [35, 2]],
-            "Impossible" : [(0, 0, 0, 0, 1), [50, 4]]
+            "Impossible" : [(1, 1, 0, 1, 12), [50, 4]]
             }
     
     def play(self, play_name):
@@ -71,11 +65,17 @@ class SimplifiedCard:
         if play_name == "High Card":
             return True
 
+        self.adder = 0
         while True:
-            if intersection_tuples(self.play_copy, self.cards_by_rank) == self.play_copy:
+
+            if intersection_tuples(tuple(rank + self.adder for rank in self.play_copy), self.cards_by_rank) == self.play_copy: #make more efficent one year
+                self.play_copy = tuple(rank + self.adder for rank in self.play_copy) #for debugs
                 return True
             else:
-                self.play_copy = tuple(rank + 1 for rank in self.play_copy)
+                self.adder += 1
+                if any(card > 13 for card in tuple(rank + self.adder for rank in self.play_copy)):
+                    return False
+                
 
 
 
@@ -100,3 +100,4 @@ if __name__ == "__main__":
     print(simplified_hand.play("Impossible"))
     print(simplified_hand.play_copy)
     print(simplified_hand.cards_by_rank)
+    print(simplified_hand.adder)
