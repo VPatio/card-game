@@ -2,7 +2,6 @@ import card
 from collections import Counter
 
 def difference_cards(card_set, rank_or_suit = False):
-
     if type(rank_or_suit) == bool:
         card_set = tuple(
                     card_set[i+1] - card_set[i]
@@ -15,6 +14,24 @@ def difference_cards(card_set, rank_or_suit = False):
             )
     
     return card_set
+
+def tuple_checker(small_tuple, big_tuple):
+    for i in range(len(small_tuple)):
+        if small_tuple[i] == big_tuple[i]:
+            continue
+        else:
+            return False
+    return True
+#move this to an external module sometime in the future
+
+def intersection_tuples(tuple1, tuple2):
+    intersected = []
+
+    for item in tuple1:
+        if item in tuple2:
+            intersected.append(item)
+
+    return tuple(intersected)
 
 class SimplifiedCard:
     simple_converter_rank = {'Ace' : 1, '2' : 2, '3' : 3, '4' : 4, '5' : 5, '6' : 6, '7' : 7, '8' : 8, '9' : 9, '10' : 10, 'Jack' : 11, 'Queen' : 12, 'King' : 13}
@@ -34,66 +51,52 @@ class SimplifiedCard:
         self.simple_ranks = [rank for rank, suit in self.simple_cards]
         self.simple_suits = [suit for rank, suit in self.simple_cards]
 
-        self.rank = 0
-        self.suit = 0
 
         self.simple_cards_arranged_by_rank = list(sorted(self.simple_cards, key = lambda x: x[0]))
 
         self.plays = {
-            "High Card" : [(), [15, 1]],
-            "Pair" : [(0), [15, 2]],
-            "Triple" : [(0, 0) ,[15, 3]],
-            "Mini Straight" : [(1,1), [35, 2]],
-            "Impossible" : [(4), [50, 4]]
+            "High Card" : [(1), [15, 1]],
+            "Pair" : [(1, 1), [15, 2]],
+            "Triple" : [(1, 1, 1) ,[15, 3]],
+            "Mini Straight" : [(1, 2, 3), [35, 2]],
+            "Impossible" : [(0, 0, 0, 0, 1), [50, 4]]
             }
     
     def play(self, play_name):
-        
-        self.cards = self.simple_cards_arranged_by_rank
 
-        self.cards_sorted = sorted(self.cards, key = lambda x: x[0])
-        self.cards_sorted_only_rank = [rank for rank, suit in self.cards_sorted]
+        self.cards_by_rank = [rank for rank, suit in self.simple_cards_arranged_by_rank]
 
-        if play_name == "Mini Straight":
+        self.play_copy = self.plays[play_name][0]
 
-            self.cards_sorted_only_rank = list(dict.fromkeys(self.cards_sorted_only_rank))
+        if play_name == "High Card":
+            return True
 
-        self.difference_cards = difference_cards(self.cards_sorted_only_rank)
-        
+        while True:
+            if intersection_tuples(self.play_copy, self.cards_by_rank) == self.play_copy:
+                return True
+            else:
+                self.play_copy = tuple(rank + 1 for rank in self.play_copy)
 
-        if self.plays[play_name][0] in self.difference_cards:
+
+
+        # for i in range(len(self.cards)):
+        #     while True:
+        #         if self.cards[i][0] > 0:
+        #             self.cards = [(rank[0] - 1,) for rank in self.cards]
+        #         else:
+        #             break
+
             
-            self.plays_possible.append(play_name)
-            return play_name
-        else:
-            return "Not possible"
+        #     if all(card in self.plays[play_name][0] for card in self.cards):
+        #         return "Works"
+        #     else:
+        #         continue
 
-
-    # def eligible_plays(self):
-    #     self.all_eligible_plays: list = []
-        
-    #     for simple_card_abr in self.simple_cards_arranged_by_rank:
-    #         if simple_card_abr[0] > 0:
-    #             self.simple_cards_arranged_by_rank = [(rank_abr - 1, suit_rememba) for rank_abr, suit_rememba in self.simple_cards_arranged_by_rank]
-    #         elif simple_card_abr[0] == 0:
-    #             pass
-
-    #     for (rank_valid, amount_valid), (useless_chips, play_name) in zip(
-    #         Counter(*self.plays.keys()).items(),
-    #         self.plays.values()
-    #         ):
-    #         if self.simple_cards_arranged_by_rank
-    #             self.all_eligible_plays.append(play_name)
-    #     return self.all_eligible_plays
-        
-
-
-    
 
 if __name__ == "__main__":
     hand = card.Deck().deck_52(return_result = True)
 
     simplified_hand = SimplifiedCard(hand)
-    print(simplified_hand.play("High Card"))
-    print(simplified_hand.difference_cards)
-    print(simplified_hand.cards_sorted_only_rank)
+    print(simplified_hand.play("Impossible"))
+    print(simplified_hand.play_copy)
+    print(simplified_hand.cards_by_rank)
