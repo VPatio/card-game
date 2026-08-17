@@ -30,8 +30,6 @@ def intersection_tuples(tuple1, tuple2):
     return tuple(intersected)
 
 class SimplifiedCard:
-    simple_converter_rank = {'Ace' : 1, '2' : 2, '3' : 3, '4' : 4, '5' : 5, '6' : 6, '7' : 7, '8' : 8, '9' : 9, '10' : 10, 'Jack' : 11, 'Queen' : 12, 'King' : 13}
-    simple_converter_suit = {'Spades' : 1, 'Hearts' : 2, 'Clubs' : 3, 'Diamonds' : 4}
 
     plays_possible = []
 
@@ -39,10 +37,7 @@ class SimplifiedCard:
         self.simple_cards = []
 
         for card in cards:
-            self.simple_rank = self.simple_converter_rank[card.rank]
-            self.simple_suit = self.simple_converter_suit[card.suit]
-
-            self.simple_cards.append((self.simple_rank, self.simple_suit))
+            self.simple_cards.append((card.rank, card.suit))
 
         self.simple_ranks = [rank for rank, suit in self.simple_cards]
         self.simple_suits = [suit for rank, suit in self.simple_cards]
