@@ -3,9 +3,11 @@ import random
 
 class CardGen:
     attributes = None
+    converter_rank = { 1 : 'Ace', 2 : '2', 3 : '3', 4 : '4', 5 : '5', 6 : '6', 7 : '7', 8 : '8', 9 : '9', 10 : '10', 11 : 'Jack', 12 : 'Queen', 13 : 'King'}
+    converter_suit = { 1 : 'Spades', 2 : 'Hearts', 3 : 'Clubs', 4 : 'Diamonds'}
 
-    border_check1: list[str] = ['2', '3', '4', '5', '6', '7', '8', '9', '10']
-    border_check2: list[str] = ['Jack', 'Queen', 'King', 'Ace']
+    border_check1: list[str] = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+    border_check2: list[str] = [11, 12, 13, 1]
     border_check3: list[str] = ['blank']
     border_maker: dict[str, str] = {
         "1_left": "[",
@@ -16,18 +18,18 @@ class CardGen:
         "3_right": "}"
     }
 
-    def __init__(self, rank:str, suit:str):
+    def __init__(self, rank:int, suit:int):
         self.rank = rank
         self.suit = suit
-        self.card_name = rank + " of " + suit
+        self.card_name = self.converter_rank.get(rank) + " of " + self.converter_suit.get(suit)
 
-        if self.rank in self.border_check1:
+        if rank in self.border_check1:
             self.border_value: int = 1
 
-        elif self.rank in self.border_check2:
+        elif rank in self.border_check2:
             self.border_value: int = 2
 
-        elif self.rank in self.border_check3:
+        elif rank in self.border_check3:
             self.border_value: int = 3
 
         else:
@@ -53,8 +55,8 @@ class Deck:
     def __init__(self):
         self.rank_deck: int = 0
         self.suit_deck: int = 0
-        self.rank_list_deck: list[str] = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King']
-        self.suit_list_deck: list[str] = ['Spades', 'Hearts', 'Clubs', 'Diamonds']
+        self.rank_list_deck: list[str] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+        self.suit_list_deck: list[str] = [1, 2, 3, 4]
 
 
         self.deck: list = []
@@ -75,7 +77,7 @@ class Deck:
                 self.rank_deck += 1
 
             if self.suit_deck == 4:
-                self.suit_deck = 0
+                #self.suit_deck = 0 dont need cuz at init it just resets anyways 0.0001 nanoseconds faster 
                 break
         
         if return_result == True:
@@ -91,7 +93,7 @@ class Deck:
         
         self.deck.append(card_to_add)
         self.copy_deck.append(card_to_add)
-        #blueprint for adding card: Deck.add_card(CardGen("Rank", "Suit"))
+        #blueprint for adding card: Deck.add_card(CardGen(Rank_num, Suit_num))
 
         if return_result == True:
             return self.deck
@@ -126,8 +128,8 @@ if __name__ == "__main__":
 
     deck2 = Deck()
     deck2.deck_52()
-    deck2.add_card(CardGen(rank= "Jack", suit= "Hearts"))
-    #print(deck2.deck)
+    deck2.add_card(CardGen(rank= 11, suit= 2))
+    print(deck2.deck)
 
     #print([card for card in deck.deck])
 
