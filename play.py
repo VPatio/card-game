@@ -1,30 +1,14 @@
 #remember the really cool tech of how you can use local variables in a class method so that its for the cool shi but isnt attribute
 
 import card
-from collections import Counter
 
-def difference_cards(card_set, rank_or_suit = False):
-    if type(rank_or_suit) == bool:
-        card_set = tuple(
-                    card_set[i+1] - card_set[i]
-                    for i in range(len(card_set) - 1)
-                )
-    else:
-        card_set = tuple(
-                card_set[i+1][rank_or_suit] - card_set[i][rank_or_suit]
-                for i in range(len(card_set) - 1)
-            )
-    
-    return card_set
-
-
-def intersection_tuples(tuple1, tuple2):
+def intersection_tuples(smaller, bigger):
     intersected = []
-    tuple2 = list(tuple2)
+    bigger = list(bigger)
 
-    for item in tuple1:
-        if item in tuple2:
-            tuple2.remove(item)
+    for item in smaller:
+        if item in bigger:
+            bigger.remove(item)
             intersected.append(item)
 
     return tuple(intersected)
@@ -50,7 +34,7 @@ class SimplifiedCard:
             "Pair" : [(1, 1), [15, 2]],
             "Triple" : [(1, 1, 1) ,[15, 3]],
             "Mini Straight" : [(1, 2, 3), [35, 2]],
-            "Impossible" : [(1, 1, 1, 1, 0), [50, 4]]
+            "Impossible" : [(1, 1, 1, 1, 1), [50, 4]]
             }
     
     def play(self, play_name):
@@ -65,6 +49,7 @@ class SimplifiedCard:
         self.adder = 0
         while True:
 
+#                                       ( the play but incremented                  )   (your cards)                 (the play but incremented                    )
             if intersection_tuples(tuple(rank + self.adder for rank in self.play_copy), self.cards_by_rank) == tuple((rank + self.adder for rank in self.play_copy)): #make more efficent one year
                 self.play_copy = tuple(rank + self.adder for rank in self.play_copy) #for debugs
                 return True
@@ -72,7 +57,6 @@ class SimplifiedCard:
                 self.adder += 1
                 if any(card > 13 for card in tuple(rank + self.adder for rank in self.play_copy)):
                     return False
-                
 
 
 
@@ -96,5 +80,5 @@ if __name__ == "__main__":
     simplified_hand = SimplifiedCard(hand)
     print(simplified_hand.play("Impossible"))
     # print(simplified_hand.play_copy)
-    # print(simplified_hand.cards_by_rank)
+    print(simplified_hand.cards_by_rank)
     # print(simplified_hand.adder)
