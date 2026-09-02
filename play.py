@@ -1,17 +1,5 @@
 #remember the really cool tech of how you can use local variables in a class method so that its for the cool shi but isnt attribute
-
 import card
-
-def intersection_tuples(smaller, bigger):
-    intersected = []
-    bigger = list(bigger)
-
-    for item in smaller:
-        if item in bigger:
-            bigger.remove(item)
-            intersected.append(item)
-
-    return tuple(intersected)
 
 class SimplifiedCard:
 
@@ -30,16 +18,25 @@ class SimplifiedCard:
         self.simple_cards_arranged_by_rank = list(sorted(self.simple_cards, key = lambda x: x[0]))
 
         self.plays = {
-            "High Card" : [(1), [15, 1]],
-            "Pair" : [(1, 1), [15, 2]],
-            "Triple" : [(1, 1, 1) ,[15, 3]],
-            "Mini Straight" : [(1, 2, 3), [35, 2]],
-            "Impossible" : [(1, 1, 1, 1, 1), [50, 4]]
+            "High Card" : [( (1, 0) ), [15, 1]],
+            "Pair" : [( (1, 0)  (1, 0) ), [15, 2]],
+            "Triple" : [( (1, 0), (1, 0), (1, 0) ), [15, 3]],
+            "Mini Straight" : [( (1, 0), (2, 0), (3, 0) ), [35, 2]],
+            "Impossible" : [( (1, 0), (1, 0), (1, 0), (1, 0), (1, 0) ), [50, 4]],
+            "Flush" : [( (0, 1), (0, 1), (0, 1), (0, 1), (0, 1) ), [50, 5]]
             }
+
+
     
     def play(self, play_name):
+        anything = 0
 
-        self.cards_by_rank = [rank for rank, suit in self.simple_cards_arranged_by_rank]
+        if play_name == "Flush":
+            if all(suit==self.simple_cards[0][1] for rank, suit in self.simple_cards):
+                return True
+
+        #self.cards_by_rank = [rank for rank, suit in self.simple_cards_arranged_by_rank]
+        self.simple_cards_only_rank = [rank for rank, suit in self.simple_cards]
 
         self.play_copy = self.plays[play_name][0]
 
@@ -49,29 +46,21 @@ class SimplifiedCard:
         self.adder = 0
         while True:
 
-#                                       ( the play but incremented                  )   (your cards)                 (the play but incremented                    )
-            if intersection_tuples(tuple(rank + self.adder for rank in self.play_copy), self.cards_by_rank) == tuple((rank + self.adder for rank in self.play_copy)): #make more efficent one year
-                self.play_copy = tuple(rank + self.adder for rank in self.play_copy) #for debugs
-                return True
+            if not any(suit for rank, suit in self.play_copy):
+                if all( (rank + self.adder) in self.simple_cards_only_rank for rank, suit in self.play_copy):
+                    self.play_copy = tuple((rank + self.adder, suit) for rank, suit in self.play_copy) #for debugs
+                    return True
+                else:
+                    self.adder += 1
+                    if any(card > 13 for card in tuple(rank + self.adder for rank, suit in self.play_copy)):
+                        return False
+
             else:
-                self.adder += 1
-                if any(card > 13 for card in tuple(rank + self.adder for rank in self.play_copy)):
-                    return False
+                if all( (rank + self.adder, suit) in self.simple_cards for rank, suit in self.play_copy):
+                    return True
+                else:
+                    pass
 
-
-
-        # for i in range(len(self.cards)):
-        #     while True:
-        #         if self.cards[i][0] > 0:
-        #             self.cards = [(rank[0] - 1,) for rank in self.cards]
-        #         else:
-        #             break
-
-            
-        #     if all(card in self.plays[play_name][0] for card in self.cards):
-        #         return "Works"
-        #     else:
-        #         continue
 
 
 if __name__ == "__main__":
@@ -80,5 +69,5 @@ if __name__ == "__main__":
     simplified_hand = SimplifiedCard(hand)
     print(simplified_hand.play("Impossible"))
     # print(simplified_hand.play_copy)
-    print(simplified_hand.cards_by_rank)
+    print(simplified_hand.simple_cards_only_rank)
     # print(simplified_hand.adder)
