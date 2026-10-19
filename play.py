@@ -27,37 +27,51 @@ class SimplifiedCard:
     def play(self, play_name):
 
         self.adder = 0
-        
         self.play_copy = self.plays[play_name][0]
-
-        if play_name == "Flush":
-            if all(suit==self.simple_cards[0][1] for rank, suit in self.simple_cards): #checks all cards, but I only need it to check 5. Solution: use adder and for loop
-                return True
-            else:
-                return False
+        temp_simple_cards = self.simple_cards.copy()
 
         if play_name == "High Card":
             return True
 
-        #flaw in this: it modifies the original play_copy, I dont think permanently, but it still does instead of temporarily shifting the cards' digits to see if they fit the play
-        
-        while True:
+        if play_name == "Flush":
 
-            if not any(suit for rank, suit in self.play_copy): #checks if the play is a rank only play
-                
-                if all( (rank + self.adder, 0) in self.simple_cards for rank, suit in self.play_copy): #it basically checks if the hand has even one card, which then the thing while check it over and over, not removing it.
-                    return True
+            for rank, suit in self.play_copy:
+
+                if (rank, suit + self.adder) in temp_simple_cards: #oooh I need to find a way to make the code interpret 0 as any rank, I think that might also be my issue with the other hands
+
+                    temp_simple_cards.remove( (rank, suit + self.adder) )
+                    continue
                 else:
 
                     self.adder += 1
-                    if any(card > 13 for card in tuple(rank + self.adder for rank, suit in self.play_copy)):
+                    if self.adder > 4:
                         return False
+                    
+            return True
 
-            else:
-                if all( (rank + self.adder, suit) in self.simple_cards for rank, suit in self.play_copy):
-                    return True
-                else:
-                    pass
+
+        #flaw in this: it modifies the original play_copy, I dont think permanently, but it still does instead of temporarily shifting the cards' digits to see if they fit the play
+
+        if any(suit for rank, suit in self.play_copy): #checks if the play is a rank only play
+            return False
+        else:
+
+            for rank, suit in self.play_copy:
+
+                while True:
+
+                    print(f"card: {rank + self.adder, suit} \n adder: {self.adder} \n if found? {(rank + self.adder, suit) in temp_simple_cards} \n iteration: {1 + ( len(self.simple_cards) - len(temp_simple_cards))}")
+                    if (rank + self.adder, suit) in temp_simple_cards: 
+
+                        temp_simple_cards.remove( (rank + self.adder, suit))
+                        continue
+
+                    else:
+
+                        self.adder += 1
+                        if any(card > 13 for card in tuple(rank + self.adder for rank, suit in self.play_copy)):
+                            return False
+            return True
 
 
 
@@ -65,7 +79,7 @@ if __name__ == "__main__":
     hand = card.Deck().deck_52(return_result = True)
 
     simplified_hand = SimplifiedCard(hand)
-    print(simplified_hand.play("Impossible"))
-    print(simplified_hand.play_copy)
-    print(simplified_hand.simple_cards)
-    print(simplified_hand.adder)
+    print(simplified_hand.play("Triple"))
+    #print(simplified_hand.play_copy)
+    #print(simplified_hand.simple_cards)
+    #print(simplified_hand.adder)
