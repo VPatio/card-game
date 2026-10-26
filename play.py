@@ -35,17 +35,21 @@ class SimplifiedCard:
 
         if play_name == "Flush":
 
-            for rank, suit in self.play_copy:
+            for (rank_useless, suit_from_play), (rank_mirror, suit_useless) in zip(self.play_copy, temp_simple_cards):
+                self.adder = 0
 
-                if (rank, suit + self.adder) in temp_simple_cards: #oooh I need to find a way to make the code interpret 0 as any rank, I think that might also be my issue with the other hands
+                while True:
 
-                    temp_simple_cards.remove( (rank, suit + self.adder) )
-                    continue
-                else:
+                    print(f" card: {rank_mirror, suit_from_play + self.adder} \n adder: {self.adder} \n if found? {(rank_mirror, suit_from_play + self.adder) in temp_simple_cards} \n")
+                    if (rank_mirror, suit_from_play + self.adder) in temp_simple_cards:
 
-                    self.adder += 1
-                    if self.adder > 4:
-                        return False
+                        temp_simple_cards.remove( (rank_mirror, suit_from_play + self.adder) )
+                        break
+                    else:
+
+                        self.adder += 1
+                        if self.adder > 4:
+                            return False
                     
             return True
 
@@ -53,23 +57,27 @@ class SimplifiedCard:
         #flaw in this: it modifies the original play_copy, I dont think permanently, but it still does instead of temporarily shifting the cards' digits to see if they fit the play
 
         if any(suit for rank, suit in self.play_copy): #checks if the play is a rank only play
-            return False
+            return False #maybe find another way to plug this up?
         else:
 
-            for rank, suit in self.play_copy:
+            for (rank_from_play, suit_useless), (rank_useless, suit_mirror) in zip(self.play_copy, temp_simple_cards):
+                print(f"LOOP START. ITERATION: {1 + ( len(self.simple_cards) - len(temp_simple_cards))}")
+                self.adder = 0
 
                 while True:
 
-                    print(f"card: {rank + self.adder, suit} \n adder: {self.adder} \n if found? {(rank + self.adder, suit) in temp_simple_cards} \n iteration: {1 + ( len(self.simple_cards) - len(temp_simple_cards))}")
-                    if (rank + self.adder, suit) in temp_simple_cards: 
+                    print(f" card: {rank_from_play + self.adder, suit_mirror} \n adder: {self.adder} \n if found? {(rank_from_play + self.adder, suit_mirror) in temp_simple_cards}")
+                    if (rank_from_play + self.adder, suit_mirror) in temp_simple_cards: 
 
-                        temp_simple_cards.remove( (rank + self.adder, suit))
-                        continue
+                        temp_simple_cards.remove( (rank_from_play + self.adder, suit_mirror))
+                        print("BREAKING")
+                        break
 
                     else:
 
                         self.adder += 1
-                        if any(card > 13 for card in tuple(rank + self.adder for rank, suit in self.play_copy)):
+                        if any(card > 13 for card in tuple(rank_from_play + self.adder for rank_from_play, suit_useless in self.play_copy)):
+                            print(f"ITERATION: {1 + ( len(self.simple_cards) - len(temp_simple_cards))}")
                             return False
             return True
 
