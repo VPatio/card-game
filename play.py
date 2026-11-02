@@ -12,26 +12,24 @@ class SimplifiedCard:
             self.simple_cards.append((card.rank, card.suit))
 
         self.simple_cards_arranged_by_rank = list(sorted(self.simple_cards, key = lambda x: x[0]))
-        print(self.simple_cards_arranged_by_rank)
 
         self.plays = {
-            "High Card" : [( (1, 1) ), [15, 1], "Jewish"],
-            "Pair" : [( (1, 1),  (1, 1) ), [15, 2], "Multiple"],
-            "Triple" : [( (1, 1), (1, 1), (1, 1) ), [15, 3], "Multiple"],
-            "Mini Straight" : [( (1, 1), (2, 1), (3, 1) ), [35, 2], "Sequential"],
-            "Impossible" : [( (1, 1), (1, 1), (1, 1), (1, 1), (1, 1) ), [50, 4], "Multiple"],
-            "Flush" : [( (1, 1), (1, 1), (1, 1), (1, 1), (1, 1) ), [50, 5], "Suit"]
+            "High Card" : [( (0, 0) ), [15, 1], "Jewish"],
+            "Pair" : [( (0, 0),  (0, 0) ), [15, 2], "Multiple"],
+            "Triple" : [( (0, 0), (0, 0), (0, 0) ), [15, 3], "Multiple"],
+            "Mini Straight" : [( (0, 0), (1, 0), (2, 0) ), [35, 2], "Sequential"],
+            "Impossible" : [( (0, 0), (0, 0), (0, 0), (0, 0), (0, 0) ), [50, 4], "Multiple"],
+            "Flush" : [( (0, 0), (0, 0), (0, 0), (0, 0), (0, 0) ), [50, 5], "Suit"]
             }
 
 
     
     def play(self, play_name):
 
-        adder = 0
-        init_adder = 0
         play_copy = self.plays[play_name][0]
         temp_simple_cards = self.simple_cards.copy()
-        print(temp_simple_cards)
+        remember = []
+        #print(temp_simple_cards)
 
 
         if play_name == "High Card":
@@ -39,35 +37,24 @@ class SimplifiedCard:
         
         if self.plays[play_name][2] == "Multiple":
 
-            for rank_check, suit_check in play_copy:
-                adder = 0
-                print(f"ITERATION: {1 + ( len(self.simple_cards) - len(temp_simple_cards))}")
+            for (rank, suit), (counter, (rank_add, suit_add)) in zip(self.simple_cards_arranged_by_rank, enumerate(play_copy)):
+                print(f"\nITERATION: {counter}")
+
 
                 while True:
-                    print(f" card: {rank_check + init_adder, suit_check + adder} \n adder: {adder} \n if found? {(rank_check + init_adder, suit_check + adder) in temp_simple_cards}")
 
-                    if (rank_check + init_adder, suit_check + adder) in temp_simple_cards:
+                    print(f"card: {(rank + rank_add, suit + suit_add)} \n if found? {(rank + rank_add, suit + suit_add) in self.simple_cards_arranged_by_rank} \n remembered?: {rank + rank_add == remember[0][0] if len(remember) > 0 else "Nothing to remember"} \n remember: {remember}")
+                    if (rank + rank_add, suit + suit_add) in temp_simple_cards and rank + rank_add == remember[0][0] if len(remember) > 0 else True:
 
-                        temp_simple_cards.remove((rank_check + init_adder, suit_check + adder))
+                        remember.append( (rank + rank_add, suit + suit_add) )
                         break
 
                     else:
-                        adder += 1
+                        remember = []
+                        break
 
-                        if adder >= 4:
-
-                            if len(self.simple_cards) - len(temp_simple_cards) == 0:
-
-                                init_adder += 1
-                                adder = 0
-                                if init_adder >= 13:
-                                    return "Jewslam"
-
-                            else:
-                                return "No such card, I'm afraid."
-
-                        
             return True if len(temp_simple_cards) == len(self.simple_cards) - len(play_copy) else False
+
 
 
 
