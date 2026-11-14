@@ -38,7 +38,7 @@ class SimplifiedCard:
         if self.plays[play_name][2] == "Multiple":
 
             for (rank, suit), (counter, (rank_add, suit_add)) in zip(self.simple_cards_arranged_by_rank, enumerate(play_copy)):
-                print(f"\nITERATION: {counter}")
+                print(f"\nITERATION: {counter + 1}")
 
 
                 while True:
@@ -53,7 +53,6 @@ class SimplifiedCard:
                         remember = []
                         break
 
-            return True if len(temp_simple_cards) == len(self.simple_cards) - len(play_copy) else False
 
 
 
@@ -81,10 +80,13 @@ class SimplifiedCard:
 
 
 if __name__ == "__main__":
-    hand = card.Deck().deck_52(return_result = True)
+
+    hand = card.Deck.make_hand(card.Deck(), 10, return_result = True)
+
 
     simplified_hand = SimplifiedCard(hand)
-    print(simplified_hand.play("Impossible"))
+    print(simplified_hand)
+    print(simplified_hand.play("Pair"))
     #print(simplified_hand.play_copy)
     #print(simplified_hand.simple_cards)
     #print(simplified_hand.adder)

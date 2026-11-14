@@ -60,28 +60,13 @@ class Deck:
 
 
         self.deck: list = []
-        self.copy_deck: list = []
 
-    def deck_52(self, return_result: bool = False) -> list[CardGen]:
-        self.deck = []
-        self.copy_deck = []
+        for rank in self.rank_list_deck:
+            for suit in self.suit_list_deck:
+                self.deck.append(CardGen(rank, suit))
 
-        while True:
-            self.deck.append(CardGen(self.rank_list_deck[self.rank_deck], self.suit_list_deck[self.suit_deck]))
-            self.copy_deck.append(CardGen(self.rank_list_deck[self.rank_deck], self.suit_list_deck[self.suit_deck]))
+        self.copy_deck: list = self.deck.copy()
 
-            if self.rank_deck == 12:
-                self.rank_deck = 0
-                self.suit_deck += 1
-            else:
-                self.rank_deck += 1
-
-            if self.suit_deck == 4:
-                #self.suit_deck = 0 dont need cuz at init it just resets anyways 0.0001 nanoseconds faster 
-                break
-        
-        if return_result == True:
-            return self.deck
 
     def add_card(self, card_to_add: CardGen, return_result: bool = False):
 
@@ -127,7 +112,6 @@ if __name__ == "__main__":
     #print(deck)
 
     deck2 = Deck()
-    deck2.deck_52()
     deck2.add_card(CardGen(rank= 11, suit= 2))
     print(deck2.deck)
 
