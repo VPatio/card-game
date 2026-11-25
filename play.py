@@ -37,21 +37,18 @@ class SimplifiedCard:
         
         if self.plays[play_name][2] == "Multiple":
 
-            for (rank, suit), (counter, (rank_add, suit_add)) in zip(self.simple_cards_arranged_by_rank, enumerate(play_copy)):
-                print(f"\nITERATION: {counter + 1}")
+            remember.append(self.simple_cards[0])
 
+            for rank_add, suit_add in play_copy:
 
-                while True:
+                rank, suit = remember[0][0] + rank_add, remember[0][1] + suit_add
 
-                    print(f"card: {(rank + rank_add, suit + suit_add)} \n if found? {(rank + rank_add, suit + suit_add) in self.simple_cards_arranged_by_rank} \n remembered?: {rank + rank_add == remember[0][0] if len(remember) > 0 else "Nothing to remember"} \n remember: {remember}")
-                    if (rank + rank_add, suit + suit_add) in temp_simple_cards and rank + rank_add == remember[0][0] if len(remember) > 0 else True:
+                print(f"card: {(rank, suit)} \n if found? {(rank, suit) in temp_simple_cards} \n remembered?: {rank == remember[0][0] if len(remember) > 0 else "Nothing to remember"} \n remember: {remember}")
 
-                        remember.append( (rank + rank_add, suit + suit_add) )
-                        break
+                if (rank, suit) in temp_simple_cards:
+                    temp_simple_cards.remove( (rank, suit) )
 
-                    else:
-                        remember = []
-                        break
+                else:
 
 
 
@@ -76,7 +73,9 @@ class SimplifiedCard:
                         if adder > 4:
                             return "No such card, I'm afraid."
             return True if len(temp_simple_cards) == len(self.simple_cards) - len(play_copy) else False
-        
+
+    def __str__(self):
+        return str(self.simple_cards)
 
 
 if __name__ == "__main__":
@@ -86,7 +85,7 @@ if __name__ == "__main__":
 
     simplified_hand = SimplifiedCard(hand)
     print(simplified_hand)
-    print(simplified_hand.play("Pair"))
+    print(simplified_hand.play("Triple"))
     #print(simplified_hand.play_copy)
     #print(simplified_hand.simple_cards)
     #print(simplified_hand.adder)
