@@ -12,6 +12,7 @@ class SimplifiedCard:
             self.simple_cards.append((card.rank, card.suit))
 
         self.simple_cards_arranged_by_rank = list(sorted(self.simple_cards, key = lambda x: x[0]))
+        self.simple_ranks = [rank for rank, suit in self.simple_cards]
 
         self.plays = {
             "High Card" : [( (0, 0) ), [15, 1], "Jewish"],
@@ -27,28 +28,45 @@ class SimplifiedCard:
     def play(self, play_name):
 
         play_copy = self.plays[play_name][0]
-        temp_simple_cards = self.simple_cards.copy()
-        remember = []
-        #print(temp_simple_cards)
-
+        temp_simple_ranks = self.simple_ranks.copy()
+        checker = 1
+        print(self.simple_ranks)
 
         if play_name == "High Card":
             return True
         
         if self.plays[play_name][2] == "Multiple":
 
-            remember.append(self.simple_cards[0])
+            while True:
+                breaker = False
 
-            for rank_add, suit_add in play_copy:
+                for _ in range(len(play_copy)):
 
-                rank, suit = remember[0][0] + rank_add, remember[0][1] + suit_add
+                    if breaker == True:
+                        break
 
-                print(f"card: {(rank, suit)} \n if found? {(rank, suit) in temp_simple_cards} \n remembered?: {rank == remember[0][0] if len(remember) > 0 else "Nothing to remember"} \n remember: {remember}")
+                    while True:
 
-                if (rank, suit) in temp_simple_cards:
-                    temp_simple_cards.remove( (rank, suit) )
+                        if checker in temp_simple_ranks:
+                            temp_simple_ranks.remove(checker)
 
-                else:
+                            if _ == len(play_copy) - 1:
+                                return True
+                            
+                            break
+
+                        else:
+
+                            checker += 1
+
+                            if checker > 13:
+                                return False
+                            
+                            breaker = True
+                            break
+                
+
+
 
 
 
@@ -85,7 +103,7 @@ if __name__ == "__main__":
 
     simplified_hand = SimplifiedCard(hand)
     print(simplified_hand)
-    print(simplified_hand.play("Triple"))
+    print(simplified_hand.play("Pair"))
     #print(simplified_hand.play_copy)
     #print(simplified_hand.simple_cards)
     #print(simplified_hand.adder)
